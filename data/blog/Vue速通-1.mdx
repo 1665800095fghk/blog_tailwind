@@ -1,0 +1,367 @@
+---
+title: 'Vue速通-1'
+date: '2023-01-30'
+lastmod: '2023-02-02'
+tags: ['Vue', '前端', 'JavaScript']
+draft: false
+summary: '一个非常简陋的Vue教学'
+images: ['/static/images/canada/mountains.jpg', '/static/images/canada/toronto.jpg']
+---
+
+## 初识 Vue
+
+### Vue 是一款用于构建用户界面的 JavaScript 框架，基于标准 Html、Css 和 JavaScript 构建，并提供声明式，组件化的编程模型，帮助我们有效的构建用户界面。
+
+### 下面是一个基本示例
+
+```JavaScript
+import { createApp } from 'vue'
+
+createApp({
+  data() {
+    return {
+      count: 0
+    }
+  }
+}).mount('#app')
+```
+
+```html
+<div id="app">
+  <button @click="count++">Count is: {{ count }}</button>
+</div>
+```
+
+### 页面提供了一个按钮，点击按钮会使按钮上数字增加
+
+### Vue 是一个渐进式框架，拥有自己的生态，涵盖了大部分前端开发的需求。
+
+### 不同开发者对 Vue 的需求各有不同，Vue 可以被逐步集成，开发者可以根据使用场景，以不同方式使用 Vue：
+
+- 无需构建步骤，渐进式增强静态的 Html
+- 在任何页面中作为 Web Components 嵌入
+- 单页面应用(SPA)
+- 全栈/服务端渲染(SSR)
+- Jamstack/静态站点生成(SSG)
+- 开发桌面端，移动端，WebGL，甚至是终端中的界面
+
+### 单文本组件
+
+#### Vue 可以使用.vue 文件，将 html,css,javascript 封装进一个文件内
+
+#### 上面的示例可以改为
+
+```html
+<script>
+  export default {
+    data() {
+      return {
+        count: 0,
+      }
+    },
+  }
+</script>
+
+<template>
+  <button @click="count++">Count is: {{ count }}</button>
+</template>
+
+<style scoped>
+  button {
+    font-weight: bold;
+  }
+</style>
+```
+
+## 创建一个 Vue 项目
+
+### 对于 Vue 来说可以使用 Vite 来构建项目
+
+### 可以使用下面的命令中的任意一个来使用 Vite 构建一个 Vue 项目
+
+```shell
+npm create vite@latest
+yarn create vite
+```
+
+### 然后在项目根目录使用下面的命令之一就可以下载项目需要的包
+
+```shell
+npm install
+yarn install
+```
+
+### 然后使用命令启动项目
+
+```shell
+yarn dev
+```
+
+### 再之后访问 http://localhost:5173/便可以访问到运行的项目
+
+## 创建一个应用
+
+### 每个 Vue 应用都是通过 createApp 函数创建一个新的应用实例
+
+```javascript
+import { createApp } from 'vue'
+
+const app = createApp({
+  //根组件选项
+})
+```
+
+Vue 可以使用两种不同的风格来书写代码
+
+- 选项式 API
+
+```html
+<script>
+  export default {
+    // data() 返回的属性将会成为响应式的状态
+    // 并且暴露在 `this` 上
+    data() {
+      return {
+        count: 0,
+      }
+    },
+
+    // methods 是一些用来更改状态与触发更新的函数
+    // 它们可以在模板中作为事件监听器绑定
+    methods: {
+      increment() {
+        this.count++
+      },
+    },
+
+    // 生命周期钩子会在组件生命周期的各个不同阶段被调用
+    // 例如这个函数就会在组件挂载完成后被调用
+    mounted() {
+      console.log(`The initial count is ${this.count}.`)
+    },
+  }
+</script>
+
+<template>
+  <button @click="increment">Count is: {{ count }}</button>
+</template>
+```
+
+- 组合式 API
+
+```html
+<script setup>
+  import { ref, onMounted } from 'vue'
+
+  // 响应式状态
+  const count = ref(0)
+
+  // 用来修改状态、触发更新的函数
+  function increment() {
+    count.value++
+  }
+
+  // 生命周期钩子
+  onMounted(() => {
+    console.log(`The initial count is ${count.value}.`)
+  })
+</script>
+
+<template>
+  <button @click="increment">Count is: {{ count }}</button>
+</template>
+```
+
+### 根组件
+
+#### 传入 createApp 的对象实际是一个组件，每个应用都需要一个根组件，其他组件将作为其子组件。
+
+##### 使用单文本组件时，可以从另一个文件引入根组件
+
+```javascript
+import { createApp } form 'vue';
+import App from './App.vue';
+
+const app = createApp(App);
+```
+
+### 挂载应用
+
+#### 应用实例必须在调用了`.mount()`方法后才会渲染出来。
+
+#### 该方法接受一个容器参数，可以是一个实际的 DOM 元素或一个 css 选择器字符串
+
+```html
+<div id="app"></div>
+```
+
+```javascript
+app.mount('#app')
+```
+
+#### 根组件的内容会被渲染进容器元素内
+
+### 根组件模板
+
+```html
+<div id="#app">
+  <button @click="count++">{{count}}</button>
+</div>
+```
+
+```javascript
+import { createApp } from 'vue'
+
+createApp({
+  data() {
+    return {
+      count: 0,
+    }
+  },
+}).mount('#app')
+```
+
+### 应用配置
+
+#### 应用暴露一个`.config`对象允许我们配置一些应用级选项
+
+```javascript
+app.config.errorHeader = (err) => {
+  /* 处理错误 */
+}
+```
+
+### 多个应用实例
+
+#### 应用实例不只限于一个
+
+```javascript
+const app1 = createApp({
+  /* ... */
+})
+app1.mount('#container-1')
+
+const app2 = createApp({
+  /* ... */
+})
+app2.mount('#container-2')
+```
+
+## 模板语法
+
+### Vue 使用一种基于 HTML 的模板语法，Vue 会将模板编译成高度优化的 Javascript 代码
+
+### 文本插值
+
+```html
+<span>Msg: {{ msg }}</span>
+```
+
+### 原始 html
+
+```html
+<p>{{ rawHtml }}</p>
+<p><span v-html="rawHtml"></span></p>
+```
+
+#### 显示的结果
+
+##### `<span style="color: red">This should be red.</span>`
+
+##### <span style={{color: 'red'}}>This should be red.</span>
+
+### 在插入 Html 的例子中，我们使用了`v-html`attribute，在 Vue 中，被称为一个指令。指令由`v-`作为前缀。
+
+#### `v-html`在此处所做的就是将 span 的 innerHTML 与 rawHtml 保持同步，span 的内容将被替换为 rawHtml。
+
+### Attribute 绑定
+
+#### 双大括号不能在 HTML attribute 中使用，要响应式绑定 attribute，我们可以使用`v-bind`。
+
+```html
+<div v-bind:id="myId"></div>
+```
+
+#### 上方的实例将 div 的 id 与 myId 保持一致，当 myId 为 null 或者 undefined 时，那么该 attribute 会被移除
+
+#### `v-bind`的简写
+
+```html
+<div :id="myId"></div>
+```
+
+### 布尔 attribute
+
+```html
+<button :disabled="idButtonDisabled">Button</button>
+```
+
+#### isButtonDisabled 为 true 时 button 含 disabled 属性，为 false 时，不含 disabled 属性。
+
+### 动态绑定多个值
+
+```javascript
+data() {
+  return {
+    objectAttrs: {
+      id: 'container',
+      class: 'wrapper'
+    }
+  }
+}
+```
+
+```html
+<div v-bind="objectAttrs"></div>
+```
+
+### 使用 JavaScript 表达式
+
+#### 之前的教学中，我们学会了绑定一些简单的属性，但是 Vue 在所有模板中都支持完整的 JavaScript 表达式
+
+```javascript
+{{ number + 1 }}
+{{ ok ? ‘YES’ : 'NO' }}
+{{ message.split('').resverse().join('')}}
+<div :id="`list-${id}`"></div>
+```
+
+### 指令 Directives
+
+#### 指令是指带有`v-`前缀的 attribute，Vue 提供了许多内置指令，包括上面用过的`v-bind`和`v-html`。
+
+#### 指令的作用是在其对应表达式的值变化时响应式的更新 DOM。以`v-if`举例：
+
+```html
+<p v-if="seen">Now you see me</p>
+```
+
+#### 上面，`v-if`会根据 seen 表达式的值的真假来插入/移除该`<p>`元素。
+
+### 参数
+
+#### 某些指令会需要参数，在指令后面用冒号隔开
+
+```html
+<a v-bind:href="url"> ... </a> <a v-on:click="doSomething"> ... </a>
+```
+
+### 动态参数
+
+```html
+<a v-bind:[attributeName]="url"> ... </a> <a v-on:[eventName]="doSomething"> ... </a>
+```
+
+#### 上面的例子中属性名会动态添加
+
+> #### 动态参数的值应该为字符串或 null，为其他值时会出发警告，null 为移除该指令
+
+### 修饰符 Modifiers
+
+#### 修饰符是以 . 开头的特殊后缀，表明指令以某种特殊的方式被绑定。
+
+```html
+<form @submit.prevent="onSubmit">...</form>
+```
+
+> #### 现在不对修饰符做过多的讨论，在讲`v-on`和`v-model`时，会做更详细的讲解。
