@@ -5,9 +5,9 @@ const siteMetadata = {
   description: '一个普通宅男的个人博客',
   language: 'zh-cn',
   theme: 'dark', // system, dark or light
-  siteUrl: 'https://tailwind-nextjs-starter-blog.vercel.app',
-  siteRepo: 'https://github.com/timlrx/tailwind-nextjs-starter-blog',
-  siteLogo: '/static/images/logo.png',
+  siteUrl: 'https://blog.fghk.xyz',
+  siteRepo: 'https://github.com/1665800095fghk/blog_tailwind',
+  siteLogo: '/static/images/icon.jpg',
   image: '/static/images/icon.jpg',
   socialBanner: '/static/images/twitter-card.png',
   email: 'w15272561244@163.com',

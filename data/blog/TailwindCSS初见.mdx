@@ -1,0 +1,240 @@
+---
+title: 'TailwindCSS初见'
+date: '2023-02-02'
+lastmod: '2023-02-02'
+tags: ['前端', 'CSS', 'TailwindCSS']
+draft: false
+summary: 'tailwind是一个功能类优先的CSS框架，使用它可以不用编写css内容快速构建出页面，搭配组件化框架效果更好'
+---
+
+# PostCSS
+
+PostCSS 是一个允许使用 js 插件转换样式的工具。这些插件可以检查(lint)你的 CSS，支持 CSS Variables 和 Mixins，编译尚未被浏览器广泛支持的 CSS 语法，内联图片，以及其它优秀功能。
+
+# TailwindCSS
+
+### 安装
+
+```shell
+npm install -D tailwindcss@latest postcss@latest autoprefixer@latest
+```
+
+> 为什么要安装 autoprefixer？
+> 由于 Tailwind 不会知道添加浏览器引擎前缀到生成的 CSS 中，可以安装 autoprefixer 来解决这个问题。
+
+### 使用 PostCSS 插件加载 TailwindCSS
+
+在项目根目录下创建`postcss.config.js`文件来加载 PostCSS 插件
+
+```js
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+```
+
+### 创建 TailwindCSS 配置文件
+
+```shell
+npx tailwindcss init
+```
+
+上面的命令会在项目根目录下创建一个最小化的 TailwindCSS 配置文件
+
+```js:tailwind..config.css
+module.exports = {
+	purge: [],
+	darkMode: false, // or 'media' or 'class'
+	theme: {
+		extend: {},
+	},
+	variants: {},
+	plugins: [],
+}
+```
+
+### 包含 Tailwind 到 CSS 中
+
+- CSS 文件，使用`@tailwind`注入基础、组件、功能样式
+
+```css:/your-css-folder/styles.css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+- 使用的是`postcss-import`
+
+```css
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+```
+
+- 使用的是 React 或 Vue 这样的 JavaScript 框架
+
+```js
+import 'tailwindcss/tailwind.css'
+```
+
+### 生成 CSS
+
+实际编译方式取决于项目，项目可能包含`npm run dev`之类的命令，以启动在后台编译 CSS 的开发服务器
+为生成而构建时，需要删除`purge`选项以删除任何未使用类
+
+```js:tailwind.config.js
+module.exports = {
+	purge: [
+		'./src/**/*.html',
+	    './src/**/*.js',
+	],
+	darkMode: false, // or 'media' or 'class'
+    theme: {
+		extend: {},
+    },
+    variants: {},
+    plugins: [],
+}
+```
+
+### 基于 TailwindCSS 的默认样式自定义 CSS
+
+```css:./src/tailwind.css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+	.btn {
+		@apply px-4 py-2 bg-blue-600 text-white rounded;
+	}
+}
+```
+
+# 核心概念
+
+### 功能类优先
+
+在一组受约束的原始功能类的基础上构建复杂组件
+
+```html:示例
+<div class="p-6 max-w-sm mx-auto bg-white rounded-xl shadow-md flex items-center space-x-4">
+	<div class="flex-shrink-0">
+		<img class="h-12 w-12" src="images/icon.jpg" alt="">
+	</div>
+	<div>
+		<div class="text-xl font-medium text-black">ChitChat</div>
+		<p class="text-gray-500">You have a new message!</p>
+	</div>
+</div>
+```
+
+#### 优点
+
+- 不用为设计类名浪费精力
+- 停止 CSS 文件增长
+- 更改更安全
+
+### 响应式设计
+
+- sm 640px
+- md 768px
+- lg 1024px
+- xl 1280px
+- 2xl 1536px
+  需要添加在特点断点生效的功能类
+
+```html
+<img class="w-16 md:w-32 lg:w-48" src="..." />
+```
+
+#### 移动优先
+
+默认情况下，Tailwind 使用移动优先的大小，这意味着在未增加前缀的功能类在所有屏幕都生效
+
+- 错误用法
+
+```html
+<div class="sm:text-center"></div>
+```
+
+- 正确用法
+
+```html
+<div class="text-center sm:text-left"></div>
+```
+
+#### 定义单个断点
+
+Tailwind 的断点仅包括`min-width`，未包括`max-width`，这意味着在较小断点上添加的功能都将应用在更大的断点上
+如果只需要在一个断点上应用某个功能，解决方案是用更大的断点覆盖
+
+#### 自定义断点
+
+```js:tailwind.config.js
+module.exports = {
+	theme: {
+		screens: {
+			'tablet': '640px',
+			'laptop': '1024px',
+			'desktop': '1280px',
+		},
+	}
+}
+```
+
+### 悬停、焦点
+
+```html
+<input class="border focus:outline-none" />
+<button class="bg-red-500 hover:bg-red-700">button</button>
+```
+
+### 深色模式
+
+当启用深色模式时，可以为网站设置不同的样式
+
+```html
+<div class="dark:bg-gary-800 bg-white"></div>
+```
+
+出于包体的大小考虑，Tailwind 默认未开启深色模式
+
+```js:tailwind.config.js
+module.exports = {
+	darkMode: 'media',
+}
+```
+
+`dark`变体可以与其他变体结合使用
+
+```html
+<button class="lg:dark:hover:bg-white">
+  <!-- ... -->
+</button>
+```
+
+==其余关于深色模式的内容参见官方文档==
+
+### 添加基础样式
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  h1 {
+    @apply text-2xl;
+  }
+  h2 {
+    @apply text-xl;
+  }
+}
+```
+
+## 以上就是 Tailwind 基础使用，其他的详细内容可以前往官方文档查询
+
+[官方文档](https://www.tailwindcss.cn/docs)
